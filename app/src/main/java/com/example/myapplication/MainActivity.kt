@@ -8,10 +8,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.setFragmentResultListener
-import com.example.myapplication.ApiKeyDialogFragment
 import com.example.myapplication.domain.WeatherService2
 import com.example.myapplication.utils.ApiKeyManager
+import com.example.myapplication.utils.toDailySummary
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +21,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
 
     private var userAPI: String? = null
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -84,6 +85,31 @@ class MainActivity : AppCompatActivity() {
             }
             else -> {
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+
+        // Get the items from API
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val forcast = weatherService.getCurrentWeather(
+                    latitude,
+                    longitude,
+                    userAPI!!
+                )
+
+                val dailySummaries = forcast.toDailySummary()
+
+                dailySummaries.forEach {
+                    Log.d("DailyForecast",
+                        "${it.date} → ${it.avgTemp}°C, ${it.description}, icon: ${it.icon}"
+                    )
+                }
+                // ToDO: pass `dailySummaries` to RecyclerView adapter for UI
+                // ToDo: now sho these in text views
+
+            } catch (e: Exception) {
+                Log.e("Forecast", "Error fetching forecast", e)
             }
         }
     }

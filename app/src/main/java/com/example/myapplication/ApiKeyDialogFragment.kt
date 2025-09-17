@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.setFragmentResult
 import com.example.myapplication.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -26,7 +25,7 @@ class ApiKeyDialogFragment : DialogFragment() {
             .setPositiveButton("Save") { dialog, _ ->
                 val key = etApiKey.text?.toString()?.trim().orEmpty()
                 if (key.isNotEmpty()) {
-                    // Return key to the Activity via Fragment Result API
+                    // ✅ Send the key back to MainActivity
                     setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_KEY_API to key))
                     dialog.dismiss()
                 }

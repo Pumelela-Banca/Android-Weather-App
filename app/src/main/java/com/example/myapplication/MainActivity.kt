@@ -92,13 +92,13 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val forcast = weatherService.getCurrentWeather(
+                val forecast = weatherService.getCurrentWeather(
                     latitude,
                     longitude,
                     userAPI!!
                 )
 
-                val dailySummaries = forcast.toDailySummary()
+                val dailySummaries = forecast.toDailySummary()
 
                 dailySummaries.forEach {
                     Log.d("DailyForecast",

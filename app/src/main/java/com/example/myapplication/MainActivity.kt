@@ -8,7 +8,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.domain.WeatherService2
+import com.example.myapplication.userinterface.ForecastAdapter
 import com.example.myapplication.utils.ApiKeyManager
 import com.example.myapplication.utils.toDailySummary
 import com.google.android.gms.location.LocationServices
@@ -23,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private var userAPI: String? = null
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
+    private lateinit var forecastAdapter: ForecastAdapter
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -44,6 +48,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_main) // <-- make sure you set your layout
+
+        forecastAdapter = ForecastAdapter(emptyList())
+
+        val recyclerView = findViewById<RecyclerView>(R.id.rvForecast)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = forecastAdapter
 
         userAPI = apiKeyManager.getApiKey()
 
@@ -106,6 +118,7 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 // ToDO: pass `dailySummaries` to RecyclerView adapter for UI
+
                 // ToDo: now sho these in text views
 
             } catch (e: Exception) {

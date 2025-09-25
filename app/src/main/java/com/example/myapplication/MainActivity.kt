@@ -23,10 +23,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
+    private val TAG = "MainActivity"
     private var userAPI: String? = null
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private lateinit var forecastAdapter: ForecastAdapter
+
+
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -44,20 +47,22 @@ class MainActivity : AppCompatActivity() {
         .build()
 
     val weatherService = retrofit.create(WeatherService2::class.java)
-    val apiKeyManager = ApiKeyManager(this)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "Load 1")
 
-        setContentView(R.layout.activity_main) // <-- make sure you set your layout
+        setContentView(R.layout.activity_main) //
+        val apiKeyManager = ApiKeyManager(this)
 
         forecastAdapter = ForecastAdapter(emptyList())
 
         val recyclerView = findViewById<RecyclerView>(R.id.rvForecast)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = forecastAdapter
+        Log.d(TAG, "Load 2")
 
-        userAPI = apiKeyManager.getApiKey()
 
         // Listen for API key dialog result
         supportFragmentManager.setFragmentResultListener(
@@ -77,6 +82,9 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager,
                 "ApiKeyDialog"
             )
+
+        } else {
+            userAPI = apiKeyManager.getApiKey()
         }
 
         // Request location
@@ -100,31 +108,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Get the items from API
-
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val forecast = weatherService.getCurrentWeather(
-                    latitude,
-                    longitude,
-                    userAPI!!
-                )
-
-                val dailySummaries = forecast.toDailySummary()
-
-                dailySummaries.forEach {
-                    Log.d("DailyForecast",
-                        "${it.date} → ${it.avgTemp}°C, ${it.description}, icon: ${it.icon}"
-                    )
-                }
-                // ToDO: pass `dailySummaries` to RecyclerView adapter for UI
-
-                // ToDo: now sho these in text views
-
-            } catch (e: Exception) {
-                Log.e("Forecast", "Error fetching forecast", e)
-            }
+        // Get the items from API and update UI
+        if (userAPI != null)
+        {
+            getWeatherItems()
         }
+
     }
 
     private fun getUserLocation() {
@@ -166,4 +155,33 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
+    private fun getWeatherItems()
+    {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val forecast = weatherService.getCurrentWeather(
+                    latitude,
+                    longitude,
+                    userAPI!!
+                )
+
+                val dailySummaries = forecast.toDailySummary()
+
+                dailySummaries.forEach {
+                    Log.d("DailyForecast",
+                        "${it.date} → ${it.avgTemp}°C, ${it.description}, icon: ${it.icon}"
+                    )
+                }
+                // ToDO: pass `dailySummaries` to RecyclerView adapter for UI
+
+                // ToDo: now sho these in text views
+
+            } catch (e: Exception) {
+                Log.e("Forecast", "Error fetching forecast", e)
+            }
+        }
+    }
+
 }

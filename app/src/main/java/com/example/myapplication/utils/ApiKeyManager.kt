@@ -1,9 +1,10 @@
 package com.example.myapplication.utils
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 
 class ApiKeyManager(context: Context) {
-
+    private val TAG = "ApiKeyManager"
     companion object {
         private const val PREFS_NAME = "ApiKeyPrefs"
         private const val API_KEY_KEY = "apiKey"
@@ -17,7 +18,8 @@ class ApiKeyManager(context: Context) {
     // Save the API key and set last used timestamp
 
     fun saveApiKey(apiKey: String) {
-        prefs.edit().apply() {
+        Log.d(TAG, "SaveAPiKey")
+        prefs!!.edit().apply() {
             putString(API_KEY_KEY, apiKey)
             putLong(KEY_LAST_USED, System.currentTimeMillis())
             apply()

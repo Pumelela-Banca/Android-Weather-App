@@ -63,29 +63,9 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = forecastAdapter
         Log.d(TAG, "Load 2")
 
+        // Create button to show dialog and run function
+        // ToDo 
 
-        // Listen for API key dialog result
-        supportFragmentManager.setFragmentResultListener(
-            ApiKeyDialogFragment.REQUEST_KEY,
-            this
-        ) { _, bundle ->
-            val key = bundle.getString(ApiKeyDialogFragment.BUNDLE_KEY_API).orEmpty()
-            if (key.isNotEmpty()) {
-                apiKeyManager.saveApiKey(key)
-                userAPI = key
-            }
-        }
-
-        // Show dialog if no key saved
-        if (!apiKeyManager.hasValidApiKey()) {
-            ApiKeyDialogFragment.newInstance().show(
-                supportFragmentManager,
-                "ApiKeyDialog"
-            )
-
-        } else {
-            userAPI = apiKeyManager.getApiKey()
-        }
 
         // Request location
         when {
@@ -114,6 +94,33 @@ class MainActivity : AppCompatActivity() {
             getWeatherItems()
         }
 
+    }
+
+    // Starts dialog to get API from user
+    private fun startApiDialog(apiKeyManager : ApiKeyManager)
+    {
+        // Listen for API key dialog result
+        supportFragmentManager.setFragmentResultListener(
+            ApiKeyDialogFragment.REQUEST_KEY,
+            this
+        ) { _, bundle ->
+            val key = bundle.getString(ApiKeyDialogFragment.BUNDLE_KEY_API).orEmpty()
+            if (key.isNotEmpty()) {
+                apiKeyManager.saveApiKey(key)
+                userAPI = key
+            }
+        }
+
+        // Show dialog if no key saved
+        if (!apiKeyManager.hasValidApiKey()) {
+            ApiKeyDialogFragment.newInstance().show(
+                supportFragmentManager,
+                "ApiKeyDialog"
+            )
+
+        } else {
+            userAPI = apiKeyManager.getApiKey()
+        }
     }
 
     private fun getUserLocation() {

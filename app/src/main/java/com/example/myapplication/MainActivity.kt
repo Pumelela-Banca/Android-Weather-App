@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         addApi.setOnClickListener {
             startApiDialog(apiKeyManager)
         }
-        
+
         // Request location
         when {
             ContextCompat.checkSelfPermission(

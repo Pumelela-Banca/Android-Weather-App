@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.result.contract.ActivityResultContracts
@@ -64,9 +65,14 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "Load 2")
 
         // Create button to show dialog and run function
-        // ToDo 
+        // ToDo
 
+        val addApi: Button = findViewById<Button>(R.id.addApi)
 
+        addApi.setOnClickListener {
+            startApiDialog(apiKeyManager)
+        }
+        
         // Request location
         when {
             ContextCompat.checkSelfPermission(
